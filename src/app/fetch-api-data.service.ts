@@ -7,7 +7,7 @@ const apiUrl = 'https://movie-it-1986.herokuapp.com/';
 @Injectable({
   providedIn: 'root'
 })
-export class UserRegistrationService {
+export class FetchApiDataService {
   //Inject HttpClient module to constructor params
   //Will provide it to the whole class, making it available through this http
   constructor(private http: HttpClient) {
@@ -28,7 +28,7 @@ export class UserRegistrationService {
     );
   }
 
-  //call to get all movies
+  //all movies
   getAllMovies(): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.get(apiUrl + 'movies', {
@@ -42,7 +42,7 @@ export class UserRegistrationService {
     );
   }
 
-  //call to get specific single movie
+  //single, specific movie
   getMovie(title: any): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.get(apiUrl + 'movies/' + title, {
@@ -56,6 +56,7 @@ export class UserRegistrationService {
     );
   }
 
+  //director's details
   getDirector(director: any): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.get(apiUrl + 'directors/' + director, {
@@ -69,6 +70,7 @@ export class UserRegistrationService {
     );
   }
 
+  //genres details
   getGenre(genre: any): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.get(apiUrl + 'genres/' + genre, {
@@ -82,6 +84,7 @@ export class UserRegistrationService {
     );
   }
 
+  //user data
   getUser(username: string): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.get(apiUrl + 'users/' + username, {
@@ -95,6 +98,7 @@ export class UserRegistrationService {
     );
   }
 
+  // fav movies
   getFavoriteMovies(username:any): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.get(apiUrl + 'users/' + username + '/movies', {
@@ -108,6 +112,7 @@ export class UserRegistrationService {
     );
   }
 
+  // add fav movies
   addFavoriteMovies(movieId:any): Observable<any> {
     const username = localStorage.getItem('username')
     const token = localStorage.getItem('token');
@@ -122,6 +127,7 @@ export class UserRegistrationService {
     );
   }
 
+  // edit user profile
   editUser(userDetails:any): Observable<any> {
     const username = localStorage.getItem('username')
     const token = localStorage.getItem('token');
@@ -135,7 +141,7 @@ export class UserRegistrationService {
       catchError(this.handleError)
     );
   }
-
+  // delete user profile
   deleteUser(): Observable<any> {
     const username = localStorage.getItem('username')
     const token = localStorage.getItem('token');
@@ -149,7 +155,7 @@ export class UserRegistrationService {
       catchError(this.handleError)
     );
   }
-
+  // delete movie from favorite
   deleteMovie(movieId:any): Observable<any> {
     const username = localStorage.getItem('username')
     const token = localStorage.getItem('token');
@@ -164,21 +170,20 @@ export class UserRegistrationService {
     );
   }
 
-  private extractResponseData(res: Response): any {
+  
+  private extractResponseData(res: any): any {
     const body = res;
-    return body || { };
+    return body || {};
   }
-
+ 
   private handleError(error: HttpErrorResponse): any {
     if (error.error instanceof ErrorEvent) {
-      console.error('Some error occurred:', error.error.message);
+    console.error('Some error occurred:', error.error.message);
     } else {
-      console.error(
+    console.error(
         `Error Status code ${error.status}, ` +
         `Error body is: ${error.error}`);
     }
-    return throwError(
-      'Something bad happened; please try again later.'
-    );
+    return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 }
