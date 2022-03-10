@@ -25,6 +25,7 @@ import { MovieDetailsViewComponent } from './movie-details-view/movie-details-vi
 const appRoutes: Routes = [
   { path: 'welcome', component: WelcomePageComponent },
   { path: 'movies', component: MovieCardComponent },
+  { path: 'profile', component: ProfileViewComponent},
   { path: '', redirectTo: 'welcome', pathMatch: 'prefix' },
 ];
 

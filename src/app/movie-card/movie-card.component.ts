@@ -47,21 +47,24 @@ export class MovieCardComponent implements OnInit {
     });
   }
 
-  openMovieDetailsView(Title: string, Description: string): void {
+  openMovieDetailsView(title: string, description: string): void {
     this.dialog.open(MovieDetailsViewComponent, {
-      data: { Title, Description }
-    })
+      data: { Title: title, Description: description },
+      width: '300px',
+    });
   }
 
-  openGenreView(Name: string, Description: string): void {
+  openGenreView(name: string, description: string): void {
     this.dialog.open(GenreViewComponent, {
-      data: { Name, Description }
+      data: { Name: name, Description: description },
+      width: '300px',
     })
   }
 
-  openDirectorView(Name: string, Bio: string, Birth: string, Death: string): void {
+  openDirectorView(name: string, bio: string, birth: string, death: string): void {
     this.dialog.open(DirectorViewComponent, {
-      data: { Name, Bio, Birth, Death }
+      data: { Name:name, Bio: bio, Birth: birth, Death: death },
+      width: '300px',
     })
   }
 
