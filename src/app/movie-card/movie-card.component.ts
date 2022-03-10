@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { FetchApiDataService } from '../fetch-api-data.service';
 import { MovieDetailsViewComponent } from '../movie-details-view/movie-details-view.component';
 import { DirectorViewComponent } from '../director-view/director-view.component';
@@ -14,17 +15,20 @@ import { GenreViewComponent } from '../genre-view/genre-view.component';
 export class MovieCardComponent implements OnInit {
 
   movies: any[] = [];
-  favorited: any[] = [];
+  Favorites: any[] = [];
+  user: any[] = [];
+
 
   constructor(
     public fetchApiData: FetchApiDataService,
     public dialog: MatDialog,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    public router: Router,
     ) { }
 
   ngOnInit(): void {
     this.getMovies()
-    this.getFavorites()
+    this.getFavoriteMovies()
   }
 
   getMovies(): void {
@@ -35,12 +39,11 @@ export class MovieCardComponent implements OnInit {
     });
   }
 
-  getFavorites(): void {
+  getFavoriteMovies(): void {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.fetchApiData.getUser(user).subscribe((resp: any) => {
-      this.favorited = resp.FavoriteMovies;
-      console.log(this.favorited);
-      return this.favorited;
+      this.Favorites = resp.FavoriteMovies;
+      console.log(this.Favorites);
     });
   }
 
@@ -62,26 +65,48 @@ export class MovieCardComponent implements OnInit {
     })
   }
 
-  addFavMovie(movieId: string): void {
-    this.fetchApiData.addFavoriteMovies(movieId).subscribe((resp: any) => {
-      console.log(resp);
-      this.snackBar.open(`Added movie to Watchlist`, 'OK', {
+  addFavoriteMovie(MovieID: string, title: string): void {
+    this.fetchApiData.addFavoriteMovie(MovieID, this.user).subscribe((resp: any) => {
+      this.snackBar.open(`${title} has been added to your Watchlist!`, 'OK', {
         duration: 4000,
       });
-      this.getFavorites()
       this.ngOnInit();
     });
+    return this.getFavoriteMovies();
   }
 
-  removeFavMovie(movieId: string): void {
-    this.fetchApiData.deleteMovie(movieId).subscribe((resp: any) => {
+  removeFavoriteMovie(MovieId: string, title: string): void {
+    this.fetchApiData.deleteFavMovie(MovieId, this.user).subscribe((resp: any) => {
       console.log(resp);
-      this.snackBar.open(`Removed movie from Watchlist`, 'OK', {
-        duration: 4000,
-      });
-      this.getFavorites()
+      this.snackBar.open(
+        `${title} has been removed from your Watchlist!`,
+          'OK',
+          {
+            duration: 4000,
+          }
+        );
       this.ngOnInit();
     });
+    return this.getFavoriteMovies();
+  }
+
+  isFavorite(MovieID: string): boolean {
+    return this.Favorites.some((movie) => movie._id === MovieID);
+  }
+
+  toggleFavorite(movie: any): void {
+    this.isFavorite(movie._id)
+      ? this.removeFavoriteMovie(movie._id, movie.Title)
+      : this.addFavoriteMovie(movie._id, movie.Title);
+  }
+
+  openProfile(): void {
+    this.router.navigate(['profile']);
+  }
+
+  logOut(): void {
+    this.router.navigate(['welcome']);
+    localStorage.clear();
   }
 
 }
