@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FetchApiDataService } from '../fetch-api-data.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { FetchApiDataService } from '../fetch-api-data.service';
 
 @Component({
   selector: 'app-profile-view',
@@ -15,16 +17,28 @@ export class ProfileViewComponent implements OnInit {
   fav: any[] = []
   favMovie: any = []
   user: any = {}
+  username: any = {}
 
   constructor(
     public fetchApiData: FetchApiDataService,
-    public snackBar: MatSnackBar
+    public snackBar: MatSnackBar,
+    public dialog: MatDialog,
+    public router: Router
   ) { }
 
   ngOnInit(): void {
     this.getUser()
     this.getMovies()
     this.getFav()
+  }
+
+  backToMovies(): void {
+    this.router.navigate(['movies']);
+  }
+
+  logOut(): void {
+    this.router.navigate(['welcome']);
+    localStorage.clear();
   }
 
   getMovies(): void {
@@ -63,14 +77,13 @@ export class ProfileViewComponent implements OnInit {
   }
 
   removeFav(movieId: string, title: string): void {
-    this.fetchApiData.deleteMovie(movieId).subscribe((resp: any) => {
+
+    this.fetchApiData.deleteFavMovie(this.username, movieId).subscribe((resp: any) => {
       console.log(resp);
       this.snackBar.open(`Removed ${title} from Watchlist`, 'OK', {
         duration: 4000,
       });
-    });
-    this.ngOnInit();
-    return this.getFav();
+    })
   }
 
   editUserInfo(): void {
