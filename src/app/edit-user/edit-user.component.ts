@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FetchApiDataService } from '../fetch-api-data.service';
 
 @Component({
@@ -11,49 +11,44 @@ import { FetchApiDataService } from '../fetch-api-data.service';
 
 export class EditUserComponent implements OnInit {
 
-  Username = localStorage.getItem('user');
-  user: any = {};
+  @Input() newData = { Username: '', Password: '', Name: '', Email: '', Birth_date: '' }
 
-  @Input() userProfile = {
-    Username: this.user.Username,
-    Password: this.user.Password,
-    Email: this.user.Email,
-    Birth_date: this.user.Birth_date,
+  userData: any = {
+    Username: this.data.username,
+    Password: this.data.password,
+    Email: this.data.email,
+    Birth_date: this.data.birth_date
   };
 
 
   constructor(
     public fetchApiData: FetchApiDataService,
     public dialogRef: MatDialogRef<EditUserComponent>,
-    public snackbar: MatSnackBar
+    public snackbar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      username: string;
+      password: string;
+      email: string;
+      birth_date: Date;
+    }
   ) { }
 
   ngOnInit(): void {
   }
 
-  getUser(): void {
-    const user = localStorage.getItem('user');
-    this.fetchApiData.getUser(user).subscribe((resp: any) => {
-      this.user = resp;
-    });
-  }
-
   editUser(): void {
-    this.fetchApiData
-      .editUser(this.userProfile)
-      .subscribe((resp) => {
+    if (this.newData.Username && this.newData.Password && this.newData.Email && this.newData.Birth_date) {
+      this.fetchApiData.editUser(this.data.username, this.newData).subscribe((resp: any) => {
         this.dialogRef.close();
-
-        // update profile in localstorage
-        localStorage.setItem('Username', this.userProfile.Username);
-        localStorage.setItem('Password', this.userProfile.Password);
-
-        this.snackbar.open('Your profile was updated successfully!', 'OK', {
-          duration: 4000,
-        });
-        setTimeout(() => {
-          window.location.reload();
-        });
+        window.location.reload();
+        localStorage.setItem('user', JSON.stringify(resp));
+        this.snackbar.open('Data successfully updated', 'OK', { duration: 2000 })
       });
+      //alert when submitting an empty field
+    } else {
+      this.snackbar.open('Plase fill all the fields', 'OK', { duration: 2000 })
+    }
   }
+
 }

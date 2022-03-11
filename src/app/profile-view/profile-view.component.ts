@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { FetchApiDataService, User } from '../fetch-api-data.service';
+import { FetchApiDataService } from '../fetch-api-data.service';
 import { EditUserComponent } from '../edit-user/edit-user.component';
+import { DeleteUserComponent } from '../delete-user/delete-user.component';
 
 @Component({
   selector: 'app-profile-view',
@@ -13,10 +14,15 @@ import { EditUserComponent } from '../edit-user/edit-user.component';
 
 export class ProfileViewComponent implements OnInit {
 
-  user: any = {};
-  Username = localStorage.getItem('user');
-
-  FavMovies: any[] = [];
+  movies: any[] = [];
+  Favorite_Movies: any[] = [];
+  UserFromStorage: any = localStorage.getItem('user');
+  currentUser: any = (JSON.parse(this.UserFromStorage));
+  currentUsername: any = this.currentUser.Username;
+  currentFavs: any = this.currentUser.Favorite_Movies;
+  username: any = localStorage.getItem('user');
+  user: any = JSON.parse(this.username);
+  favsEmpty: boolean = true;
 
   constructor(
     public fetchApiData: FetchApiDataService,
@@ -26,8 +32,7 @@ export class ProfileViewComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getUserInfo();
-    this.getFavoriteMovies();
+    this.getCurrentUser(this.currentUsername);
   }
 
   mainPage(): void {
@@ -39,54 +44,49 @@ export class ProfileViewComponent implements OnInit {
     localStorage.clear();
   }
 
-  getUserInfo(): void {
-    const user = localStorage.getItem('user');
-    if (user) {
-      this.fetchApiData.getUser(user).subscribe((resp: User) => {
-        this.user = resp;
-
-        console.log(this.user);
-      });
-    }
-  }
-
-  getFavoriteMovies(): void {
-    const user = localStorage.getItem('user');
-    this.fetchApiData.getUser(user).subscribe((resp: any) => {
-      this.FavMovies = resp.FavoriteMovies;
-      console.log(this.FavMovies);
-      return this.FavMovies;
+  getCurrentUser(currentUser: string): void {
+    this.fetchApiData.getUser(currentUser).subscribe((resp: any) => {
+      this.currentUser = resp;
+      this.currentFavs = this.currentUser.Favorite_Movies;
+      this.areFavsEmpty();
+      return this.currentUser;
     });
   }
 
-  deleteFavMovie(MovieId: string, title: string): void {
-    this.fetchApiData.deleteFavMovie(MovieId, title).subscribe((resp: any) => {
-      console.log(resp);
-      this.snackBar.open(
-        `${title} has been removed from your favorites!`,
-        'OK',
-        {
-          duration: 4000,
-        }
-      );
-      this.ngOnInit();
-    });
-  }
-
-  openEditUser(): void {
+  EditUser(
+    username: string,
+    password: string,
+    email: string,
+    birth_date: Date
+  ): void {
     this.dialog.open(EditUserComponent, {
-      width: '320px',
+      data: { username, password, email, birth_date },
+      width: '320px'
     });
   }
 
   deleteUser(): void {
-    this.fetchApiData.deleteUser().subscribe(() => {
-      this.snackBar.open(`${this.Username} has been removed!`, 'OK', {
-        duration: 4000,
-      });
-      localStorage.clear();
+    this.dialog.open(DeleteUserComponent, {
+      width: '320px'
     });
-    this.router.navigate(['welcome']);
+  }
+
+  removeFromFavs(movieId: string): void {
+    this.fetchApiData.deleteFavMovie(this.user.Username, movieId).subscribe((resp: any) => {
+      this.snackBar.open('Removed from favs', 'OK', { duration: 2000 });
+      this.getCurrentUser(this.user.Username);
+      this.ngOnInit();
+      2000
+    });
+  }
+
+  areFavsEmpty(): any {
+    if (this.currentFavs.length == 0) {
+      this.favsEmpty = true;
+    } else {
+      this.favsEmpty = false;
+    }
+    return this.favsEmpty;
   }
 
 }

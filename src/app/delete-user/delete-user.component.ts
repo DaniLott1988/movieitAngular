@@ -27,14 +27,13 @@ export class DeleteUserComponent implements OnInit {
   }
 
   deleteUser(): void {
-    if (confirm('Are you sure? This cannot be undone.')) {
-      this.router.navigate(['welcome']).then(() => {
-        this.snackbar.open('Your account was deleted', 'OK', {duration: 6000});
-      });
+    this.fetchApiData.deleteUser(this.username!).subscribe((response) => {
+      console.log('response', response);
+      console.log('removing user:', this.username);
+      this.snackbar.open('Your account has been removed', 'Bye', { duration: 2000 });
+      this.dialogRef.close();
+      localStorage.clear();
       this.router.navigate(['welcome'])
-      this.fetchApiData.deleteUser().subscribe(() => {
-        localStorage.clear();
-      });
-    }
+    });
   }
 }
