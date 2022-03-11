@@ -4,6 +4,15 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 const apiUrl = 'https://movie-it-1986.herokuapp.com/';
+
+export interface User {
+  _id: string;
+  Favorite_Movies: Array<string>;
+  Username: string;
+  Email: string;
+  Birth_date: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,7 +55,9 @@ export class FetchApiDataService {
     return this.http.get(apiUrl + 'movies/' + title, {
       headers: new HttpHeaders(
         {
-          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer  ${token}`
+          //Authorization: 'Bearer ' + token,
         })
     }).pipe(
       map(this.extractResponseData),
@@ -57,7 +68,7 @@ export class FetchApiDataService {
   //director's details
   getDirector(director: any): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'directors/' + director, {
+    return this.http.get(apiUrl + 'directors/' + name, {
       headers: new HttpHeaders(
         {
           Authorization: 'Bearer ' + token,
@@ -71,7 +82,7 @@ export class FetchApiDataService {
   //genres details
   getGenre(genre: any): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'genres/' + genre, {
+    return this.http.get(apiUrl + 'genres/' + name, {
       headers: new HttpHeaders(
         {
           Authorization: 'Bearer ' + token,
@@ -113,7 +124,7 @@ export class FetchApiDataService {
   // add fav movies
   addFavoriteMovie(username: string, movieId:any): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.post(apiUrl + 'users/' + username + '/movies/' + movieId, movieId, {
+    return this.http.post(apiUrl + 'users/' + username + '/movies/' + movieId, {}, {
       headers: new HttpHeaders(
         {
           Authorization: 'Bearer ' + token,
@@ -152,6 +163,7 @@ export class FetchApiDataService {
       catchError(this.handleError)
     );
   }
+  
   // delete movie from favorite
   deleteFavMovie(username: string, movieId:any): Observable<any> {
     const token = localStorage.getItem('token');

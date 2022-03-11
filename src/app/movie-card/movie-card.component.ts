@@ -15,8 +15,12 @@ import { GenreViewComponent } from '../genre-view/genre-view.component';
 export class MovieCardComponent implements OnInit {
 
   movies: any[] = [];
-  Favorites: any[] = [];
-  user: any[] = [];
+  Favorite_Movies: any[] = [];
+  username: any = localStorage.getItem('user');
+  user: any = JSON.parse(this.username);
+  currentUser: any = null;
+  currentFavs: any = null;
+  isInFavs: boolean = false;
 
 
   constructor(
@@ -28,22 +32,21 @@ export class MovieCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.getMovies()
-    this.getFavoriteMovies()
+    this.getCurrentUser(this.user.Username);
+  }
+
+  getCurrentUser(username: string): void {
+    this.fetchApiData.getUser(username).subscribe((resp: any) => {
+      this.currentUser = resp;
+      this.currentFavs = resp.Favorite_Movies;
+      return (this.currentUser, this.currentFavs);
+    });
   }
 
   getMovies(): void {
     this.fetchApiData.getAllMovies().subscribe((resp: any) => {
       this.movies = resp;
-      console.log(this.movies);
       return this.movies;
-    });
-  }
-
-  getFavoriteMovies(): void {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.fetchApiData.getUser(user).subscribe((resp: any) => {
-      this.Favorites = resp.FavoriteMovies;
-      console.log(this.Favorites);
     });
   }
 
@@ -68,39 +71,45 @@ export class MovieCardComponent implements OnInit {
     })
   }
 
-  addFavoriteMovie(MovieID: string, title: string): void {
-    this.fetchApiData.addFavoriteMovie(MovieID, this.user).subscribe((resp: any) => {
-      this.snackBar.open(`${title} has been added to your Watchlist!`, 'OK', {
-        duration: 4000,
+  addToFavs(movieId: string): void {
+    //checking if the title is already in favs
+    if (this.currentFavs.filter(function (e: any) { return e._id === movieId; }).length > 0) {
+      this.snackBar.open('Already in your favs', 'OK', { duration: 2000 });
+      return
+    } else {
+      this.fetchApiData.addFavoriteMovie(this.user.Username, movieId).subscribe((resp: any) => {
+        this.getCurrentUser(this.user.Username);
+        this.ngOnInit();
+        this.snackBar.open('Added to favs', 'OK', { duration: 2000 });
       });
+    }
+  }
+
+  removeFromFavs(movieId: string): void {
+    this.fetchApiData.deleteFavMovie(this.user.Username, movieId).subscribe((resp: any) => {
+      this.snackBar.open('Removed from favs', 'OK', { duration: 2000 });
+      this.getCurrentUser(this.user.Username);
       this.ngOnInit();
+      2000
     });
-    return this.getFavoriteMovies();
   }
 
-  removeFavoriteMovie(MovieId: string, title: string): void {
-    this.fetchApiData.deleteFavMovie(MovieId, this.user).subscribe((resp: any) => {
-      console.log(resp);
-      this.snackBar.open(
-        `${title} has been removed from your Watchlist!`,
-          'OK',
-          {
-            duration: 4000,
-          }
-        );
-      this.ngOnInit();
-    });
-    return this.getFavoriteMovies();
+  favCheck(movieId: string): any {
+    let favIds = this.currentFavs.map(function (fav: any) { return fav._id });
+    if (favIds.includes(movieId)) {
+      this.isInFavs = true;
+      return this.isInFavs;
+    };
   }
 
-  isFavorite(MovieID: string): boolean {
-    return this.Favorites.some((movie) => movie._id === MovieID);
-  }
-
-  toggleFavorite(movie: any): void {
-    this.isFavorite(movie._id)
-      ? this.removeFavoriteMovie(movie._id, movie.Title)
-      : this.addFavoriteMovie(movie._id, movie.Title);
+  toggleFavs(movieId: string): void {
+    if (this.currentFavs.filter(function (e: any) { return e._id === movieId; }).length > 0) {
+      this.removeFromFavs(movieId);
+      this.isInFavs = false;
+    } else {
+      this.addToFavs(movieId)
+      this.isInFavs = true;
+    }
   }
 
   openProfile(): void {

@@ -1,50 +1,63 @@
 <header>
-    <button (click)="mainPage()" mat-raised-button style="margin: 10px;width:100px;">Main Page</button>
-    <button (click)="logOut()" mat-raised-button style="width:100px;">Log Out</button>
-  </header>
+  <button (click)="mainPage()" mat-raised-button style="margin: 10px;width:100px;">Main Page</button>
+  <button (click)="logOut()" mat-raised-button style="width:100px;">Log Out</button>
+</header>
 
-<div class="profile-div">
-  <div class="watchlist-div">
-      <h2>Watchlist</h2>
-      <ul *ngFor="let title of currentFavs;">
-          <li>{{title}}</li>
-      </ul>
+<div>
+  <div style="display: flex;">
+    <div *ngFor="let favorite of FavMovies; let i = index" style="display: flex; margin: 15px;">
+      <mat-card>
+        <mat-card-header style="text-align: left;">
+          <mat-card-title>{{favorite.Title}}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <img src={{favorite.ImagePath}} alt={{favorite.Title}} style='height: 120px;' />
+        </mat-card-content>
+        <mat-card-actions>
+          <button
+            mat-icon-button
+            (click)="deleteFavMovie(favorite._id, favorite.title)"
+          >
+            <mat-icon class="remove-btn">
+              remove_circle
+            </mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
   <div>
-      <div class="details-div">
-          <h2>Current Details</h2>
-          <p>Username: {{currentUser.Username}}</p>
-          <p>Email: {{currentUser.Email}}</p>
-          <p>Birth_date: {{currentUser?.Birth_date | date }}</p>
+    <mat-card class="mat-elevation-z10">
+      <mat-card-header>
+        <mat-card-title>Your Profile</mat-card-title>
+      </mat-card-header>
+      <div class="content-container">
+        <mat-card-content>
+          <span id="profile-title">Username: </span
+          >{{ user.Username }}</mat-card-content
+        >
+        <mat-card-content>
+          <span id="profile-title">Email: </span
+          >{{ user.Email }}</mat-card-content
+        >
+        <mat-card-content>
+          <span id="profile-title">Birthday: </span
+          >{{ user.Birth_date | date }}</mat-card-content
+        >
       </div>
-      <mat-card>
-          <mat-card-header>
-              <mat-card-title>Edit Your Profile</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-              <form>
-                  <mat-form-field>
-                      <input matInput [(ngModel)]="userData.Username" type="text" placeholder="Username"
-                          name="Username">
-                  </mat-form-field>
-                  <mat-form-field>
-                      <input matInput [(ngModel)]="userData.Password" type="password" placeholder="Password"
-                          name="Password">
-                  </mat-form-field>
-                  <mat-form-field>
-                      <input matInput [(ngModel)]="userData.Email" type="email" placeholder="Email" name="Email">
-                  </mat-form-field>
-                  <mat-form-field>
-                      <input matInput [(ngModel)]="userData.Birth_date" type="date" placeholder="Birth_date"
-                          name="Birth_date">
-                  </mat-form-field>
-              </form>
-          </mat-card-content>
-          <mat-card-actions style="text-align: center; margin-bottom: 5px;">
-              <button mat-raised-button (click)="editUserInfo()" color="primary">
-                  Save Changes
-              </button>
-          </mat-card-actions>
-      </mat-card>
+      <mat-card-actions>
+        <button
+          mat-raised-button
+          class="edit-btn"
+          (click)="openEditUser()"
+        >
+          Edit Profile
+        </button>
+        <button mat-raised-button class="delete-btn" color="warn" (click)="deleteUser()">
+          Delete User
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
-</div> 
+</div>
+    
