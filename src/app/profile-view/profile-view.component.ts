@@ -15,13 +15,10 @@ import { DeleteUserComponent } from '../delete-user/delete-user.component';
 export class ProfileViewComponent implements OnInit {
 
   movies: any[] = [];
-  Favorite_Movies: any[] = [];
   UserFromStorage: any = localStorage.getItem('user');
   currentUser: any = (JSON.parse(this.UserFromStorage));
   currentUsername: any = this.currentUser.Username;
   currentFavs: any = this.currentUser.Favorite_Movies;
-  username: any = localStorage.getItem('user');
-  user: any = JSON.parse(this.username);
   favsEmpty: boolean = true;
 
   constructor(
@@ -48,8 +45,16 @@ export class ProfileViewComponent implements OnInit {
     this.fetchApiData.getUser(currentUser).subscribe((resp: any) => {
       this.currentUser = resp;
       this.currentFavs = this.currentUser.Favorite_Movies;
+      this.getMovies();
       this.areFavsEmpty();
       return this.currentUser;
+    });
+  }
+
+  getMovies(): void {
+    this.fetchApiData.getAllMovies().subscribe((resp: any) => {
+      this.movies = resp.filter( (movie: any) => 
+      this.currentFavs.includes(movie._id));
     });
   }
 
@@ -72,12 +77,11 @@ export class ProfileViewComponent implements OnInit {
   }
 
   removeFromFavs(movieId: string): void {
-    this.fetchApiData.deleteFavMovie(this.user.Username, movieId).subscribe((resp: any) => {
-      this.snackBar.open('Removed from favs', 'OK', { duration: 2000 });
-      this.getCurrentUser(this.user.Username);
+    this.fetchApiData.deleteFavMovie(this.currentUsername, movieId).subscribe((resp: any) => {
       this.ngOnInit();
-      2000
+      this.snackBar.open('Removed from favs', 'OK', { duration: 2000 });
     });
+    this.ngOnInit();
   }
 
   areFavsEmpty(): any {

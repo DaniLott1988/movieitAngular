@@ -1,46 +1,48 @@
-<header>
-  <button (click)="mainPage()" mat-raised-button style="margin: 10px;width:100px;">Main Page</button>
-  <button (click)="logOut()" mat-raised-button style="width:100px;">Log Out</button>
-</header>
-<div class="profile-page">
-
-  <h1>Your favorite movies:</h1>
-
-  <div class="favorites-list">
-    <h3 *ngIf="favsEmpty">Looks like you have not added any titles to your favorites.
-    </h3>
-    <mat-card class="card-list" *ngFor="let fav of this.currentUser.Favorite_Movies; let i = index;">
-      <img src="{{fav.ImagePath}} ">
-      <mat-card-actions class="actions">
-        <mat-icon (click)="removeFromFavs(fav._id)" color="primary">favorite</mat-icon>
-      </mat-card-actions>
-      <mat-card-title class="title">{{fav.Title}}</mat-card-title>
-    </mat-card>
+<div class="main-profile">
+  <header>
+    <button (click)="mainPage()" mat-raised-button style="margin: 10px;width:100px;" color="primary">Main Page</button>
+    <button (click)="logOut()" mat-raised-button style="width:100px;" color="primary">Log Out</button>
+  </header>
+  <div class="profile-page">
+  
+    <h1>Your favorite movies:</h1>
+  
+    <div class="favorites-list">
+      <h3 *ngIf="favsEmpty">Looks like you have not added any titles to your favorites.
+      </h3>
+      <mat-card class="card-list" *ngFor="let fav of this.movies; let i = index;">
+        <mat-card-title class="title">{{fav.Title}}</mat-card-title>
+        <img src="{{fav.ImagePath}}" width="120px">
+        <mat-card-actions class="actions">
+          <mat-icon (click)="removeFromFavs(fav._id)" color="primary">favorite</mat-icon>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  
+    <div class="user-data">
+      <mat-card>
+        <mat-card-title>
+          Your Profile Data:
+        </mat-card-title>
+        <mat-card-content>
+          <p>Username: {{this.currentUser.Username}}</p>
+        </mat-card-content>
+        <mat-card-content>
+          <p>Email: {{this.currentUser.Email}}</p>
+        </mat-card-content>
+        <mat-card-content>
+          <p>Birthdate: {{this.currentUser.Birth_date | date:'longDate'}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="deleteUser()" color="warn">Delete Profile</button>
+          <button mat-raised-button color="primary"
+            (click)="EditUser(currentUser.Username, currentUser.Password, currentUser.Email, currentUser.Birth_date)">Edit
+            Your Profile</button>
+        </mat-card-actions>
+      </mat-card>
+  
+    </div>  
   </div>
-
-  <div class="user-data">
-    <mat-card>
-      <mat-card-title>
-        Your Profile Data:
-      </mat-card-title>
-      <mat-card-content>
-        <p>Username: {{this.currentUser.Username}}</p>
-      </mat-card-content>
-      <mat-card-content>
-        <p>Email: {{this.currentUser.Email}}</p>
-      </mat-card-content>
-      <mat-card-content>
-        <p>Birthdate: {{this.currentUser.Birth_date | date:'longDate'}}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-button (click)="deleteUser()" color="warn">Delete Profile</button>
-        <button mat-raised-button color="primary"
-          (click)="EditUser(currentUser.Username, currentUser.Password, currentUser.Email, currentUser.Birth_date)">Edit
-          Your Profile</button>
-      </mat-card-actions>
-    </mat-card>
-
-  </div>
-
 </div>
+
     

@@ -1,0 +1,32 @@
+.main-profile {
+  text-align: left;
+  background-color: lightblue;
+}
+
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  padding: 50px;
+  background-color: lightblue;
+}
+
+.card-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.mat-card {
+  margin: 10px;
+  width: 250px;
+}
+
+.mat-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  row-gap: 16px;
+  grid-area: actions;
+}
