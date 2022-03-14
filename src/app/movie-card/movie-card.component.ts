@@ -1,3 +1,13 @@
+/**
+ * Renders a responsive grid of movie cards for each movie in the database.  
+ * Each movie card has an image, links to open dialogs for genre, director, and description 
+ * components, and a toggle button to add or remove the movie from the user's favorites.  
+ *   
+ * Also renders a BannerComponent.
+ * 
+ * @module MovieCardComponent
+ */
+
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -50,12 +60,26 @@ export class MovieCardComponent implements OnInit {
     });
   }
 
+  /**
+   * 
+   * @param movie {Title: <string>, Description: <string>, ... }  
+   * Opens a dialog box with a MovieDetailsComponent, passing the movie data
+   * into the component.
+   */
+
   openMovieDetailsView(title: string, description: string): void {
     this.dialog.open(MovieDetailsViewComponent, {
       data: { Title: title, Description: description },
       width: '300px',
     });
   }
+
+   /**
+   * 
+   * @param genre {Name: <string>, Description: <string>}  
+   * Opens a dialog box with a GenreViewComponent, passing the genre data
+   * into the component.
+   */
 
   openGenreView(name: string, description: string): void {
     this.dialog.open(GenreViewComponent, {
@@ -64,12 +88,26 @@ export class MovieCardComponent implements OnInit {
     })
   }
 
+  /**
+   * @param director {Name: <string>, Bio: <string>, Birth: <string>, Death: <string>}  
+   * Opens a dialog box with a DirectorViewComponent, passing the director 
+   * data into the component.
+   */
+
   openDirectorView(name: string, bio: string, birth: string, death: string): void {
     this.dialog.open(DirectorViewComponent, {
       data: { Name:name, Bio: bio, Birth: birth, Death: death },
       width: '300px',
     })
   }
+
+  /**
+   * @param id string containing the ID of a movie to be added to the user's 
+   * list of favorite movies.  
+   * 
+   * Adds a movie to a user's list of favorites with a POST request via 
+   * [[FetchApiDataService.addFavoriteMovie]].
+   */
 
   addToFavs(movieId: string): void {
     //checking if the title is already in favs
@@ -84,6 +122,14 @@ export class MovieCardComponent implements OnInit {
       });
     }
   }
+
+  /**
+   * @param id string containing the ID of a movie to be removed from the user's
+   * list of favorite movies.
+   * 
+   * Removes a movie from a user's list of favorites with a DELETE request via
+   * [[FetchApiDataService.deleteFavMovie]].
+   */
 
   removeFromFavs(movieId: string): void {
     this.fetchApiData.deleteFavMovie(this.user.Username, movieId).subscribe((resp: any) => {
@@ -101,6 +147,12 @@ export class MovieCardComponent implements OnInit {
       return this.isInFavs;
     };
   }
+
+  /**
+   * Sets the isFavorite attribute of each movie to true or false.  
+   * This is called after fetching the favorites with
+   * [[MovieCardComponent.favCheck]].
+   */
 
   toggleFavs(movieId: string): void {
     if (this.currentFavs.filter(function (e: any) { return e._id === movieId; }).length > 0) {

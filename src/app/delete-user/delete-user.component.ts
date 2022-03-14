@@ -1,3 +1,9 @@
+/**
+ * Renders a form for users to delete their profile.  
+ * 
+ * @module DeleteUserComponent
+ */
+
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -25,6 +31,10 @@ export class DeleteUserComponent implements OnInit {
 
   ngOnInit(): void {
   }
+
+  /**
+   * Deletes the user's data.
+   */
 
   deleteUser(): void {
     this.fetchApiData.deleteUser(this.username!).subscribe((response) => {

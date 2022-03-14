@@ -1,3 +1,12 @@
+/**
+ * Renders a form for users to update their account information and 
+ * an array of movie cards corresponding to their favorite movies.  
+ * 
+ * Also renders a BannerComponent.
+ * 
+ * @module ProfileViewComponent
+ */
+
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,6 +23,10 @@ import { DeleteUserComponent } from '../delete-user/delete-user.component';
 
 export class ProfileViewComponent implements OnInit {
 
+  /**
+   * Grabs the user information from the database on the backend 
+   */
+
   movies: any[] = [];
   UserFromStorage: any = localStorage.getItem('user');
   currentUser: any = (JSON.parse(this.UserFromStorage));
@@ -28,6 +41,12 @@ export class ProfileViewComponent implements OnInit {
     public router: Router
   ) { }
 
+  /**
+   * Fetches data for the logged in user.  
+   * Then, downloads all the movie data and maps
+   * the user's favs to Favorite_Movies.  
+   */
+
   ngOnInit(): void {
     this.getCurrentUser(this.currentUsername);
   }
@@ -41,6 +60,10 @@ export class ProfileViewComponent implements OnInit {
     localStorage.clear();
   }
 
+  /**
+   * What pulls up when a user logs in and accesses their current info
+   */
+
   getCurrentUser(currentUser: string): void {
     this.fetchApiData.getUser(currentUser).subscribe((resp: any) => {
       this.currentUser = resp;
@@ -50,6 +73,11 @@ export class ProfileViewComponent implements OnInit {
       return this.currentUser;
     });
   }
+
+  /**
+   * Fetches the logged in user's favorite movies from the server.  
+   * This function is called from [[ProfileViewComponent.getCurrentUser]].
+   */
 
   getMovies(): void {
     this.fetchApiData.getAllMovies().subscribe((resp: any) => {
@@ -76,6 +104,10 @@ export class ProfileViewComponent implements OnInit {
     });
   }
 
+  /**
+   * How a user deletes a movie from the list of Favorite_Movies.
+   */
+
   removeFromFavs(movieId: string): void {
     this.fetchApiData.deleteFavMovie(this.currentUsername, movieId).subscribe((resp: any) => {
       this.ngOnInit();
@@ -83,6 +115,10 @@ export class ProfileViewComponent implements OnInit {
     });
     this.ngOnInit();
   }
+
+  /**
+   * What doesn't show when a user doesn't have favorite movies yet
+  */
 
   areFavsEmpty(): any {
     if (this.currentFavs.length == 0) {

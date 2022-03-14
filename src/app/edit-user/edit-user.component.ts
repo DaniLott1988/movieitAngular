@@ -1,3 +1,9 @@
+/**
+ * Renders a form for users to update their account information.  
+ * 
+ * @module EditUserComponent
+ */
+
 import { Component, OnInit, Inject, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -10,6 +16,11 @@ import { FetchApiDataService } from '../fetch-api-data.service';
 })
 
 export class EditUserComponent implements OnInit {
+
+  /**
+   * Starts the value of each form field as an empty string. When the user types 
+   * into the field, the DB is updated as well.
+   */
 
   @Input() newData = { Username: '', Password: '', Name: '', Email: '', Birth_date: '' }
 
@@ -36,6 +47,11 @@ export class EditUserComponent implements OnInit {
 
   ngOnInit(): void {
   }
+
+  /**
+   * Updates the user's data. Only sends data to the server for fields 
+   * that have been filled in.
+   */
 
   editUser(): void {
     if (this.newData.Username && this.newData.Password && this.newData.Email && this.newData.Birth_date) {
